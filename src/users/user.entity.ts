@@ -1,7 +1,9 @@
+import { Certificate } from 'src/certificates/certificate.entity';
 import { Faculty } from 'src/faculties/faculty.entity';
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { BeforeInsert, Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { AbstractEntity } from '../common/entities/abstract.entity';
 import { EnumRole } from './classes/user.enum';
+import * as bcrypt from 'bcrypt';
 
 @Entity('user')
 export class User extends AbstractEntity {
@@ -16,6 +18,9 @@ export class User extends AbstractEntity {
 
   @Column({ nullable: true })
   father_initial: string;
+
+  @Column({ nullable: true })
+  cnp: string;
 
   @Column({ type: 'enum', enum: EnumRole, default: EnumRole.STUDENT })
   role: EnumRole;
@@ -40,4 +45,12 @@ export class User extends AbstractEntity {
 
   @ManyToOne(() => Faculty, (faculty) => faculty.users)
   faculty: Faculty;
+
+  @OneToMany(() => Certificate, (certificate) => certificate.id)
+  certificates: Certificate[];
+
+  @BeforeInsert()
+  async hashPassword() {
+    if (this.password) this.password = await bcrypt.hash(this.password, 8);
+  }
 }

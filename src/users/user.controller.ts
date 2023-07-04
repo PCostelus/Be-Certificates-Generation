@@ -43,4 +43,14 @@ export class UserController {
   public deleteProfessor(@Param() id: UUIDValidate): Promise<Return> {
     return this.userService.deleteProfessor(id);
   }
+
+  @Post('/students')
+  public uploadStudents(@Body() body: CreateUserDto[]): Promise<Return> {
+    return this.userService.uploadStudents(body);
+  }
+
+  @Get('/students')
+  public listStudents(): Promise<User[] | Return> {
+    return this.userService.listStudents();
+  }
 }

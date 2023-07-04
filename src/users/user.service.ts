@@ -53,6 +53,28 @@ export class UserService {
     }
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
+  public async listStudents(): Promise<User[] | Return> {
+    try {
+      const students = await this.userRepository.find({
+        where: [{ role: EnumRole.STUDENT }],
+        relations: ['faculty'],
+      });
+
+      if (students.length === 0) {
+        return new Return(
+          HttpStatus.NOT_FOUND,
+          'There are no students',
+          'Not found',
+        );
+      }
+      return students;
+    } catch (err) {
+      console.log('Error on listing all the students: ', err);
+      return new Return(HttpStatus.BAD_REQUEST, err.message, 'Bad request');
+    }
+  }
+
   public async updateProfessor(
     userId: UUIDValidate,
     userData: UpdateUserDto,
@@ -84,5 +106,20 @@ export class UserService {
     }
     await this.userRepository.delete(userId.id);
     return new Return();
+  }
+
+  public async uploadStudents(userData: UpdateUserDto[]): Promise<Return> {
+    for (const user of userData) {
+      await this.userRepository.save(this.userRepository.create(user));
+    }
+
+    return new Return();
+  }
+
+  public async findUserByEmail(email_address: string): Promise<User> {
+    return this.userRepository.findOne({
+      where: { email_address },
+      relations: ['faculty'],
+    });
   }
 }

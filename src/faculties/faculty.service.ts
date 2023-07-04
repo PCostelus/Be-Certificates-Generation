@@ -35,6 +35,7 @@ export class FacultyService {
           'Not found',
         );
       }
+
       return faculty;
     } catch (err) {
       console.log('Error on getting a faculty: ', err);
@@ -63,6 +64,20 @@ export class FacultyService {
           'Not found',
         );
       }
+
+      for (let i = 0; i < faculties.length; i++) {
+        faculties[i]['status'] =
+          faculties[i].study_domains.length > 0 &&
+          faculties[i].study_programs.length &&
+          faculties[i].faculty_acronym &&
+          faculties[i].end_year &&
+          faculties[i].start_year
+            ? 'complet'
+            : 'incomplet';
+      }
+
+      console.log(faculties);
+
       return faculties;
     } catch (err) {
       console.log('Error on listing all the faculties: ', err);

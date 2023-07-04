@@ -1,5 +1,5 @@
 export enum EnumRole {
-  ADMININ = 0,
+  ADMIN = 0,
   DECAN = 1,
   SECRETARY = 2,
   HEAD_SECRETARY = 3,
