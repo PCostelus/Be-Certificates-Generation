@@ -6,6 +6,7 @@ import {
   Post,
   Body,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { Return } from 'src/common/entities/return.class';
 import { UUIDValidate } from 'src/common/entities/uuidValidate.class';
@@ -24,8 +25,13 @@ export class CertificateController {
   }
 
   @Get('/notifications')
-  public getCertificatesForNotifications(): Promise<Certificate[] | Return> {
-    return this.certificateService.getCertificatesForNotifications();
+  public getCertificatesForNotifications(
+    @Query() query,
+  ): Promise<Certificate[] | Return> {
+    console.log(query);
+    return this.certificateService.getCertificatesForNotifications(
+      query.userId,
+    );
   }
 
   @Get('/:id')

@@ -14,6 +14,7 @@ import { User } from './user.entity';
 import { CreateUserDto } from './classes/createUser.dto';
 import { EnumRole } from './classes/user.enum';
 import { UpdateUserDto } from './classes/updateUser.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -88,6 +89,9 @@ export class UserService {
         'User does not exist',
         'Not Found',
       );
+    }
+    if (userData.password) {
+      userData.password = await bcrypt.hash(userData.password, 8);
     }
     await this.userRepository.update(userId.id, userData);
     return new Return();

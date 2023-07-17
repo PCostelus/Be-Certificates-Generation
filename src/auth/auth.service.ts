@@ -19,8 +19,6 @@ export class AuthService {
       loginPayload.email_address,
     );
 
-    console.log(user);
-
     let hasValidPassword = false;
     if (user) {
       hasValidPassword = await loginPayload.validatePassword(user);

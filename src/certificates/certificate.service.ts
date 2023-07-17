@@ -132,17 +132,23 @@ export class CertificateService {
   }
 
   @UseInterceptors(ClassSerializerInterceptor)
-  public async getCertificatesForNotifications(): Promise<
-    Certificate[] | Return
-  > {
+  public async getCertificatesForNotifications(
+    userId: string,
+  ): Promise<Certificate[] | Return> {
     try {
-      const certificates = await this.certificateRepository.find({
+      const user = await this.userRepository.findOne({
+        where: { id: userId },
+        relations: ['faculty'],
+      });
+
+      console.log(user);
+      let certificates = await this.certificateRepository.find({
         where: [
           { decan_signature: IsNull() },
           { head_secretary_signature: IsNull() },
           { secretary_signature: IsNull() },
         ],
-        relations: ['user'],
+        relations: ['user', 'user.faculty'],
       });
 
       if (certificates.length === 0) {
@@ -150,6 +156,11 @@ export class CertificateService {
           HttpStatus.NOT_FOUND,
           'There are no certificates ',
           'Not found',
+        );
+      }
+      if (user.role !== EnumRole.ADMIN) {
+        certificates = certificates.filter(
+          (certificate) => certificate.user.faculty.id === user.faculty.id,
         );
       }
       return certificates;
